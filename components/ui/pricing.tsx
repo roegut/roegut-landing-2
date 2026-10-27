@@ -30,17 +30,38 @@ export function useMediaQuery(query: string) {
 
 // --- INTERACTIVE STARFIELD ---
 
+/**
+ * Azar reproducible. Math.random() da numeros distintos en el servidor y en el
+ * navegador, y React se queja de que el HTML no coincide. Derivando todo del
+ * numero de estrella, ambos lados calculan lo mismo.
+ */
+function azar(semilla: number) {
+  const x = Math.sin(semilla) * 10000
+  return x - Math.floor(x)
+}
+
 function Star({
+  index,
   mousePosition,
   containerRef,
 }: {
+  index: number
   mousePosition: { x: number | null; y: number | null }
   containerRef: React.RefObject<HTMLDivElement | null>
 }) {
-  const [initialPos] = useState({
-    top: `${Math.random() * 100}%`,
-    left: `${Math.random() * 100}%`,
-  })
+  const initialPos = React.useMemo(() => {
+    const r = (k: number) => azar(index * 13.73 + k * 4.21)
+    // Redondeado a proposito: sin una precision fija, el servidor y el navegador
+    // escriben el mismo numero con distinta cantidad de decimales y React lo
+    // reporta como desajuste de hidratacion.
+    return {
+      top: `${(r(1) * 100).toFixed(3)}%`,
+      left: `${(r(2) * 100).toFixed(3)}%`,
+      tamano: Number((1 + r(3) * 2).toFixed(3)),
+      duracion: Number((2 + r(4) * 3).toFixed(3)),
+      retraso: Number((r(5) * 5).toFixed(3)),
+    }
+  }, [index])
 
   const [offset, setOffset] = useState({ x: 0, y: 0 })
 
@@ -74,14 +95,18 @@ function Star({
       style={{
         top: initialPos.top,
         left: initialPos.left,
-        width: `${1 + Math.random() * 2}px`,
-        height: `${1 + Math.random() * 2}px`,
+        width: `${initialPos.tamano}px`,
+        height: `${initialPos.tamano}px`,
       }}
       animate={{ x: offset.x, y: offset.y, opacity: [0, 1, 0] }}
       transition={{
         x: { type: "spring", stiffness: 100, damping: 15, mass: 0.1 },
         y: { type: "spring", stiffness: 100, damping: 15, mass: 0.1 },
-        opacity: { duration: 2 + Math.random() * 3, repeat: Number.POSITIVE_INFINITY, delay: Math.random() * 5 },
+        opacity: {
+          duration: initialPos.duracion,
+          repeat: Number.POSITIVE_INFINITY,
+          delay: initialPos.retraso,
+        },
       }}
     />
   )
@@ -97,7 +122,7 @@ function InteractiveStarfield({
   return (
     <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
       {Array.from({ length: 150 }).map((_, i) => (
-        <Star key={`star-${i}`} mousePosition={mousePosition} containerRef={containerRef} />
+        <Star key={`star-${i}`} index={i} mousePosition={mousePosition} containerRef={containerRef} />
       ))}
     </div>
   )
@@ -107,9 +132,12 @@ function InteractiveStarfield({
 
 export interface PricingPlan {
   name: string
-  price: string
+  /** Opcional: si no hay monto, la tarjeta muestra la duracion en su lugar. */
+  price?: string
   priceSuffix: string
-  features: string[]
+  /** Nivel de produccion. Reemplaza al precio como segunda senal de alcance. */
+  nivel?: string
+  features?: string[]
   description: string
   buttonText: string
   href: string
@@ -177,7 +205,8 @@ function PricingCard({ plan, index }: { plan: PricingPlan; index: number }) {
         type: "spring",
         stiffness: 100,
         damping: 20,
-        delay: index * 0.15,
+        // Con seis tarjetas, un escalonado largo hace esperar demasiado la ultima.
+        delay: Math.min(index, 3) * 0.08,
       }}
       className={cn(
         "rounded-2xl p-8 flex flex-col relative bg-background/70 backdrop-blur-sm",
@@ -196,18 +225,29 @@ function PricingCard({ plan, index }: { plan: PricingPlan; index: number }) {
         <h3 className="font-serif text-2xl text-foreground">{plan.name}</h3>
         <p className="mt-2 text-sm text-muted-foreground text-balance">{plan.description}</p>
         <div className="mt-6 flex items-baseline justify-center gap-x-1">
-          <span className="text-5xl font-bold tracking-tight text-foreground">{plan.price}</span>
+          {plan.price ? (
+            <span className="text-5xl font-bold tracking-tight text-foreground">{plan.price}</span>
+          ) : (
+            <span className="font-serif text-2xl text-foreground">{plan.priceSuffix}</span>
+          )}
         </div>
-        <p className="text-xs text-muted-foreground mt-2 uppercase tracking-widest">{plan.priceSuffix}</p>
+        {plan.price && (
+          <p className="text-xs text-muted-foreground mt-2 uppercase tracking-widest">{plan.priceSuffix}</p>
+        )}
+        {plan.nivel && (
+          <p className="text-xs text-muted-foreground mt-3 uppercase tracking-widest">{plan.nivel}</p>
+        )}
 
-        <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-left text-muted-foreground">
-          {plan.features.map((feature) => (
-            <li key={feature} className="flex gap-x-3">
-              <Check className="h-6 w-5 flex-none text-primary" aria-hidden="true" />
-              {feature}
-            </li>
-          ))}
-        </ul>
+        {plan.features && plan.features.length > 0 && (
+          <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-left text-muted-foreground">
+            {plan.features.map((feature) => (
+              <li key={feature} className="flex gap-x-3">
+                <Check className="h-6 w-5 flex-none text-primary" aria-hidden="true" />
+                {feature}
+              </li>
+            ))}
+          </ul>
+        )}
 
         <div className="mt-auto pt-8">
           <Link

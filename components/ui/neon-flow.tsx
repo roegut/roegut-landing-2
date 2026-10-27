@@ -22,9 +22,19 @@ interface TubesBackgroundProps {
   children?: React.ReactNode
   className?: string
   enableClickInteraction?: boolean
+  /** Mientras nadie mueva el raton, los tubos giran alrededor de este elemento. */
+  orbitAround?: React.RefObject<HTMLElement | null>
 }
 
-export function TubesBackground({ children, className, enableClickInteraction = true }: TubesBackgroundProps) {
+/** Segundos que tarda en dar una vuelta completa. */
+const VUELTA = 9
+
+export function TubesBackground({
+  children,
+  className,
+  enableClickInteraction = true,
+  orbitAround,
+}: TubesBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const tubesRef = useRef<TubesApp | null>(null)
   const [, setIsLoaded] = useState(false)
@@ -69,6 +79,80 @@ export function TubesBackground({ children, className, enableClickInteraction = 
       tubesRef.current = null
     }
   }, [])
+
+  // La libreria sigue al cursor escuchando "pointermove" en el cuerpo del
+  // documento. No expone forma de posicionar los tubos, asi que mientras nadie
+  // toque el raton emitimos nosotros ese evento trazando una orbita alrededor
+  // del logo. Al primer movimiento real cedemos el control: los eventos que
+  // fabricamos llegan con isTrusted en falso y los del visitante en verdadero.
+  useEffect(() => {
+    if (!orbitAround) return
+
+    const colocar = (x: number, y: number) => {
+      try {
+        document.body.dispatchEvent(
+          new PointerEvent("pointermove", {
+            clientX: x,
+            clientY: y,
+            bubbles: true,
+            cancelable: true,
+            pointerType: "mouse",
+            isPrimary: true,
+          }),
+        )
+      } catch {
+        document.body.dispatchEvent(
+          new MouseEvent("pointermove", { clientX: x, clientY: y, bubbles: true }),
+        )
+      }
+    }
+
+    const centro = () => {
+      const el = orbitAround.current
+      if (!el) return null
+      const caja = el.getBoundingClientRect()
+      return { x: caja.left + caja.width / 2, y: caja.top + caja.height / 2, radio: caja.width * 0.5 }
+    }
+
+    // Si pidio menos movimiento, se deja el halo quieto detras del logo.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const c = centro()
+      if (c) colocar(c.x, c.y)
+      return
+    }
+
+    let animacion = 0
+    let girando = true
+    const arranque = performance.now()
+
+    const girar = (ahora: number) => {
+      if (!girando) return
+      const c = centro()
+      if (c) {
+        const angulo = ((ahora - arranque) / 1000 / VUELTA) * Math.PI * 2
+        // El eje vertical va achatado para que la orbita se lea en perspectiva
+        // y no como un circulo plano.
+        colocar(c.x + Math.cos(angulo) * c.radio, c.y + Math.sin(angulo) * c.radio * 0.72)
+      }
+      animacion = requestAnimationFrame(girar)
+    }
+
+    const cederControl = (evento: PointerEvent) => {
+      if (!evento.isTrusted) return
+      girando = false
+      cancelAnimationFrame(animacion)
+      window.removeEventListener("pointermove", cederControl, true)
+    }
+
+    window.addEventListener("pointermove", cederControl, true)
+    animacion = requestAnimationFrame(girar)
+
+    return () => {
+      girando = false
+      cancelAnimationFrame(animacion)
+      window.removeEventListener("pointermove", cederControl, true)
+    }
+  }, [orbitAround])
 
   const handleClick = () => {
     if (!enableClickInteraction || !tubesRef.current) return

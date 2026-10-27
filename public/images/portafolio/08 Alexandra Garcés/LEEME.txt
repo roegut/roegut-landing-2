@@ -1,0 +1,7 @@
+Suelta aquí las fotos de esta serie.
+
+El orden lo decide el nombre del archivo: 01.jpg, 02.jpg, 03.jpg...
+Una foto llamada portada.jpg va primero siempre.
+Si quieres un texto bajo el título, crea un descripcion.txt en esta carpeta.
+
+Mientras no haya imágenes, la serie no aparece en la web.

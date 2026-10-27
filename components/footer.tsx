@@ -1,5 +1,6 @@
 "use client"
 
+import { SITIO } from "@/lib/site"
 import { buildWhatsAppLink } from "@/lib/whatsapp"
 
 export function Footer() {
@@ -28,8 +29,8 @@ export function Footer() {
           >
             WhatsApp
           </a>
-          <a href="mailto:roegutlab@gmail.com" className="text-lg hover:italic transition-all">
-            roegutlab@gmail.com
+          <a href={`mailto:${SITIO.email}`} className="text-lg hover:italic transition-all">
+            {SITIO.email}
           </a>
         </div>
 

@@ -7,7 +7,8 @@ import { MessageCircle } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { WHATSAPP_NUMBER, buildWhatsAppLink } from "@/lib/whatsapp"
+import { WHATSAPP_NUMBER, buildWhatsAppLink, formatWhatsAppNumber } from "@/lib/whatsapp"
+import { SITIO } from "@/lib/site"
 
 const sessionTypes = [
   "Retrato de autor",
@@ -19,8 +20,8 @@ const sessionTypes = [
 ]
 
 const channels = [
-  { label: "WhatsApp", value: "+51 997 131 826", href: `https://wa.me/${WHATSAPP_NUMBER}` },
-  { label: "Correo", value: "javierroederg@gmail.com", href: "mailto:javierroederg@gmail.com" },
+  { label: "WhatsApp", value: formatWhatsAppNumber(), href: `https://wa.me/${WHATSAPP_NUMBER}` },
+  { label: "Correo", value: SITIO.email, href: `mailto:${SITIO.email}` },
   { label: "Instagram", value: "@roegut.lab", href: "https://instagram.com/roegut.lab" },
 ]
 
