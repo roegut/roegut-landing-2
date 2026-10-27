@@ -1,6 +1,6 @@
 "use client"
 
-import { Fragment, useEffect, useRef, useState } from "react"
+import { Fragment, useRef } from "react"
 import Image from "next/image"
 import { motion, useReducedMotion } from "framer-motion"
 import { TubesBackground } from "@/components/ui/neon-flow"
@@ -122,20 +122,23 @@ function TextoConHalo({
 }
 
 export function Hero() {
-  const [mounted, setMounted] = useState(false)
   const menosMovimiento = useReducedMotion()
   // Centro de la orbita del fondo mientras nadie mueve el raton.
   const logoRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) return null
-
+  // Antes esto no se dibujaba hasta que el componente montaba en el navegador,
+  // y eso dejaba el titulo, la descripcion y los botones fuera del HTML que
+  // recibe Google. El fondo de tubos ya espera al navegador por su cuenta.
   return (
     <section className="relative min-h-screen w-full overflow-hidden">
       <TubesBackground className="absolute inset-0 h-full w-full min-h-screen" orbitAround={logoRef}>
+        {/* El titulo principal de la pagina. Va oculto a la vista porque la
+            marca se muestra como imagen, pero sin el los buscadores no tienen
+            de donde deducir de que trata el sitio. */}
+        <h1 className="sr-only">
+          Roegut Lab — Estudio de fotografía de autor en Cercado de Lima, Perú
+        </h1>
+
         {/* Logo positioned near the top so it doesn't sit under a big empty ceiling */}
         <div className="absolute inset-0 flex items-start justify-center px-4 pt-[13vh] md:pt-[11vh]">
           <motion.div
