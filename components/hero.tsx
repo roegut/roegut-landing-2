@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { Fragment, useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { motion, useReducedMotion } from "framer-motion"
 import { TubesBackground } from "@/components/ui/neon-flow"
@@ -16,61 +16,107 @@ const LATIDO = {
   duracion: 3.6,
 }
 
-// Texto del hero. Cada punto corta una linea, como un subtitulo.
+// Texto del hero. Cada punto corta una linea. No se nombra Cercado de Lima
+// aqui porque aparece justo debajo.
 const SUBTITULOS = [
   "Estudio privado de fotografía de autor.",
-  "Retrato, moda editorial y fotografía comercial en Cercado de Lima.",
+  "Retrato, moda editorial y fotografía comercial.",
   "Sin fórmulas genéricas.",
 ]
 
-function Subtitulos() {
+/** Separacion entre el encendido de una letra y la siguiente, en segundos. */
+const PASO_HALO = 0.045
+
+function Subtitulos({ quieto }: { quieto: boolean | null }) {
+  // Cada linea arranca donde termino la anterior, asi el brillo recorre el
+  // bloque entero de corrido en vez de reiniciarse en cada renglon.
+  let acumulado = 0
+
   return (
     <div className="flex flex-col items-center gap-1.5 max-w-md">
-      {SUBTITULOS.map((linea) => (
-        <p
-          key={linea}
-          className="text-sm md:text-base font-light text-white/80 leading-snug drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]"
-        >
-          {linea}
-        </p>
-      ))}
+      {SUBTITULOS.map((linea) => {
+        const desfase = acumulado * PASO_HALO
+        acumulado += linea.length
+        return (
+          <TextoConHalo
+            key={linea}
+            texto={linea}
+            className="text-sm md:text-base font-light leading-snug text-white/80 drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]"
+            reposo="rgba(255,255,255,0.8)"
+            quieto={quieto}
+            desfase={desfase}
+          />
+        )
+      })}
     </div>
   )
 }
 
-function TextoConHalo({ texto, quieto }: { texto: string; quieto: boolean | null }) {
+function TextoConHalo({
+  texto,
+  className,
+  quieto,
+  reposo,
+  desfase = 0,
+}: {
+  texto: string
+  className: string
+  quieto: boolean | null
+  /** Color de la letra apagada, para no pelearse con el del contenedor. */
+  reposo: string
+  /** Retraso inicial, para encadenar varias lineas en una sola ola. */
+  desfase?: number
+}) {
   if (quieto) {
-    return <p className="text-xs uppercase tracking-widest text-white/60">{texto}</p>
+    return <p className={className}>{texto}</p>
   }
 
+  // Se parte por palabras y no por letras sueltas: si cada caracter fuera un
+  // bloque independiente, el navegador podria cortar una palabra por la mitad
+  // al ajustar el ancho de linea.
+  const palabras = texto.split(" ")
+  let n = 0
+
   return (
-    <p className="text-xs uppercase tracking-widest text-white/60" aria-label={texto}>
-      {texto.split("").map((caracter, i) => (
-        <motion.span
-          key={`${caracter}-${i}`}
-          aria-hidden
-          className="inline-block whitespace-pre"
-          animate={{
-            textShadow: [
-              "0 0 0px rgba(255,45,149,0)",
-              "0 0 14px rgba(255,45,149,0.95)",
-              "0 0 0px rgba(255,45,149,0)",
-            ],
-            color: ["rgba(255,255,255,0.6)", "rgba(255,255,255,1)", "rgba(255,255,255,0.6)"],
-          }}
-          transition={{
-            duration: 1.5,
-            // El desfase por letra es lo que hace que el brillo viaje en vez
-            // de encenderse todo a la vez.
-            delay: i * 0.07,
-            repeatDelay: 2.6,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-          }}
-        >
-          {caracter}
-        </motion.span>
-      ))}
+    <p className={className} aria-label={texto}>
+      {palabras.map((palabra, p) => {
+        const letras = palabra.split("").map((caracter) => {
+          const indice = n++
+          return (
+            <motion.span
+              key={indice}
+              aria-hidden
+              className="inline-block"
+              animate={{
+                textShadow: [
+                  "0 0 0px rgba(255,45,149,0)",
+                  "0 0 14px rgba(255,45,149,0.95)",
+                  "0 0 0px rgba(255,45,149,0)",
+                ],
+                color: [reposo, "rgba(255,255,255,1)", reposo],
+              }}
+              transition={{
+                duration: 1.5,
+                // El desfase por letra es lo que hace que el brillo viaje en
+                // vez de encenderse todo a la vez.
+                delay: desfase + indice * PASO_HALO,
+                repeatDelay: 2.6,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "easeInOut",
+              }}
+            >
+              {caracter}
+            </motion.span>
+          )
+        })
+        n++ // el espacio tambien cuenta para que la ola avance parejo
+        return (
+          <Fragment key={p}>
+            <span className="inline-block whitespace-nowrap">{letras}</span>
+            {p < palabras.length - 1 ? " " : null}
+          </Fragment>
+        )
+      })}
     </p>
   )
 }
@@ -176,9 +222,14 @@ export function Hero() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
           >
-            <Subtitulos />
+            <Subtitulos quieto={menosMovimiento} />
             <div className="h-[1px] w-24 bg-white/30" />
-            <TextoConHalo texto="Cercado de Lima, Perú" quieto={menosMovimiento} />
+            <TextoConHalo
+              texto="Cercado de Lima, Perú"
+              className="text-xs uppercase tracking-widest text-white/60"
+              reposo="rgba(255,255,255,0.6)"
+              quieto={menosMovimiento}
+            />
 
             <div className="flex flex-col sm:flex-row gap-3 mt-2 w-full sm:w-auto">
               <a
