@@ -14,8 +14,8 @@ export function Footer() {
         <div className="col-span-1 md:col-span-4">
           <h2 className="font-serif text-4xl mb-4">Hablemos</h2>
           <p className="text-muted-foreground max-w-xs">
-            Estudio privado en Cercado de Lima, Perú. Retrato, moda editorial y fotografía comercial, con sesiones
-            por cita previa.
+            Estudio privado de <strong className="font-normal text-foreground">Javier Roeder</strong> en Cercado
+            de Lima, Perú. Retrato, moda editorial y fotografía comercial, con sesiones por cita previa.
           </p>
         </div>
 

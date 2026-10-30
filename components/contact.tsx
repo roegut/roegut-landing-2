@@ -56,7 +56,8 @@ export function Contact() {
           <div>
             <h2 className="font-serif text-4xl md:text-5xl tracking-tight text-foreground">Iniciar tu sesión</h2>
             <p className="mt-4 text-muted-foreground max-w-sm">
-              Cuéntame qué necesitas y coordinamos los detalles. WhatsApp es la vía más rápida para responderte.
+              Soy Javier Roeder, el fotógrafo detrás de Roegut Lab. Cuéntame qué necesitas y coordinamos los
+              detalles. WhatsApp es la vía más rápida para responderte.
             </p>
           </div>
 
