@@ -29,6 +29,7 @@ export const SITIO = {
   // nombre— pero no sabe que son la misma persona detras de este estudio.
   // Declararlos aqui es exactamente lo que une las dos cosas.
   perfilesFundador: [
+    "https://pe.linkedin.com/in/javier-roeder",
     "https://www.instagram.com/roegut/",
     "https://linktr.ee/javierroeder",
     "https://javierroederg.myportfolio.com",
