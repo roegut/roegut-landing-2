@@ -217,8 +217,8 @@ video.out{width:96px;background:#000;border:2px solid var(--line2)}
       </div>
       <div class="pane" data-pane="sombra" hidden>
         <section class="grp"><h3>Sombra</h3><label class="ctl sel"><span class="lb">Tipo</span><select id="shType"><option value="ambas">Contacto + proyectada</option><option value="contacto">Solo contacto</option><option value="proyectada">Solo proyectada</option><option value="ninguna">Sin sombra</option></select></label><label class="ctl"><span class="lb">Intensidad</span><output id="o_shadow"></output><input type="range" id="shadow" min="0" max="1" step="0.05" value="0.6"></label><label class="ctl sel"><span class="lb">Color de la sombra</span><select id="shTint"><option value="fria">Fría · noche</option><option value="neutra">Neutra</option><option value="calida">Cálida · tungsteno</option></select></label><label class="ctl"><span class="lb">Perspectiva del piso</span><output id="o_shPersp"></output><input type="range" id="shPersp" min="0.1" max="0.7" step="0.01" value="0.3"></label><p class="note">La perspectiva aplasta las sombras según qué tan inclinado se ve el piso en tu foto: más baja si fotografiaste desde poca altura.</p></section>
-        <section class="grp"><h3>Contacto</h3><label class="ctl"><span class="lb">Tamaño</span><output id="o_shCSize"></output><input type="range" id="shCSize" min="0.3" max="2.5" step="0.05" value="1"></label><label class="ctl"><span class="lb">Difusión</span><output id="o_shCSoft"></output><input type="range" id="shCSoft" min="0" max="1" step="0.05" value="0.5"></label><p class="note">La mancha oscura justo debajo de la figura: es lo que la “posa” en el piso.</p></section>
-        <section class="grp"><h3>Proyectada</h3><label class="ctl"><span class="lb">Dirección de la luz</span><output id="o_shAng"></output><input type="range" id="shAng" min="-1.5" max="1.5" step="0.05" value="-0.25"></label><label class="ctl"><span class="lb">Largo</span><output id="o_shLen"></output><input type="range" id="shLen" min="0.1" max="1.5" step="0.05" value="0.5"></label><label class="ctl"><span class="lb">Distancia</span><output id="o_shDist"></output><input type="range" id="shDist" min="0" max="3" step="0.05" value="0"></label><label class="ctl"><span class="lb">Suavidad base</span><output id="o_shBlur"></output><input type="range" id="shBlur" min="0" max="1" step="0.05" value="0.25"></label><label class="ctl"><span class="lb">Penumbra</span><output id="o_shPen"></output><input type="range" id="shPen" min="0" max="1.5" step="0.05" value="0.7"></label><label class="ctl"><span class="lb">Desvanecido en la punta</span><output id="o_shFade"></output><input type="range" id="shFade" min="0" max="1" step="0.05" value="0.6"></label></section>
+        <section class="grp"><h3>Contacto</h3><label class="ctl"><span class="lb">Tamaño</span><output id="o_shCSize"></output><input type="range" id="shCSize" min="0.3" max="4" step="0.05" value="1"></label><label class="ctl"><span class="lb">Difusión</span><output id="o_shCSoft"></output><input type="range" id="shCSoft" min="0" max="1" step="0.05" value="0.5"></label><label class="ctl"><span class="lb">Peso del contacto</span><output id="o_shCont"></output><input type="range" id="shCont" min="0" max="2" step="0.05" value="1"></label><p class="note">La mancha oscura justo debajo de la figura: es lo que la “posa” en el piso. El peso la sube o la baja sin tocar la intensidad general.</p></section>
+        <section class="grp"><h3>Proyectada</h3><label class="ctl"><span class="lb">Dirección de la luz</span><output id="o_shAng"></output><input type="range" id="shAng" min="-1.5" max="1.5" step="0.05" value="-0.25"></label><label class="ctl"><span class="lb">Largo</span><output id="o_shLen"></output><input type="range" id="shLen" min="0.1" max="1.5" step="0.05" value="0.5"></label><label class="ctl"><span class="lb">Distancia</span><output id="o_shDist"></output><input type="range" id="shDist" min="0" max="3" step="0.05" value="0"></label><label class="ctl"><span class="lb">Difuminado</span><output id="o_shBlur"></output><input type="range" id="shBlur" min="0" max="3" step="0.05" value="0.25"></label><label class="ctl"><span class="lb">Penumbra</span><output id="o_shPen"></output><input type="range" id="shPen" min="0" max="3" step="0.05" value="0.7"></label><label class="ctl"><span class="lb">Desvanecido en la punta</span><output id="o_shFade"></output><input type="range" id="shFade" min="0" max="1" step="0.05" value="0.6"></label><label class="ctl"><span class="lb">Peso de la proyectada</span><output id="o_shCast"></output><input type="range" id="shCast" min="0" max="2" step="0.05" value="1"></label><p class="note">El difuminado suaviza toda la sombra por igual; la penumbra solo la abre a medida que se aleja de la figura.</p></section>
         <section class="grp"><h3>Luz en el piso</h3><label class="ctl"><span class="lb">Charco de luz del neón</span><output id="o_shPool"></output><input type="range" id="shPool" min="0" max="1.5" step="0.05" value="0.4"></label></section>
       </div>
       <div class="pane" data-pane="filtros" hidden>
@@ -424,37 +424,64 @@ function setupBuffers(){
 // ---------- escenas de ejemplo ----------
 function demoScene(v){
   const w=1080,h=1920,c=mk(w,h),g=c.getContext('2d');
-  const hz=h*(v?0.47:0.44), vpx=w*(v?0.42:0.55);
-  let gr=g.createLinearGradient(0,0,0,hz);
-  if(v){gr.addColorStop(0,'#05080a');gr.addColorStop(1,'#14201c');}else{gr.addColorStop(0,'#2c3a6e');gr.addColorStop(1,'#8a86a8');}
-  g.fillStyle=gr;g.fillRect(0,0,w,hz+2);
+  g.fillStyle='#04060a';g.fillRect(0,0,w,h);
+  const fs=26,cw=fs*.6,cols=Math.floor(w/cw),rows=Math.floor(h/fs),ox=(w-cols*cw)/2;
+  const grid=[];for(let r=0;r<rows;r++)grid.push(new Array(cols).fill(null));
+  const put=(r,q,ch,a)=>{if(r>=0&&r<rows&&q>=0&&q<cols)grid[r][q]={ch,a};};
   const R=rng(v?7:3);
-  g.fillStyle=v?'#0c1210':'#2a2c36';
-  g.beginPath();g.moveTo(0,h*0.08);g.lineTo(w*0.32,hz-h*0.12);g.lineTo(w*0.36,hz+4);g.lineTo(0,hz+h*0.12);g.fill();
-  g.beginPath();g.moveTo(w,h*0.02);g.lineTo(w*0.7,hz-h*0.15);g.lineTo(w*0.66,hz+4);g.lineTo(w,hz+h*0.2);g.fill();
-  for(let x=w*0.36;x<w*0.66;x+=40+R()*60){const hh=40+R()*160;g.fillRect(x,hz-hh,30+R()*50,hh+4);}
-  for(let i=0;i<70;i++){g.fillStyle=R()<.6?'#f5c46a':'#cfe8ff';g.globalAlpha=.25+R()*.6;const side=R()<.5;const x=side?R()*w*0.3:w*0.7+R()*w*0.3;const y=h*0.1+R()*(hz-h*0.1);g.fillRect(x,y,6+R()*10,8+R()*10);}
-  g.globalAlpha=1;
-  if(v){for(let i=0;i<14;i++){g.fillStyle=`rgba(${120+R()*60},${150+R()*50},40,${.25+R()*.3})`;g.beginPath();g.ellipse(R()*w,R()*h*0.3,120+R()*160,80+R()*90,0,0,7);g.fill();}}
-  gr=g.createLinearGradient(0,hz,0,h);gr.addColorStop(0,v?'#24221d':'#45464d');gr.addColorStop(1,v?'#141310':'#26262b');
-  g.fillStyle=gr;g.fillRect(0,hz,w,h-hz);
-  g.strokeStyle='rgba(255,255,255,.07)';g.lineWidth=2;
-  if(v){for(let i=-12;i<=12;i++){g.beginPath();g.moveTo(vpx,hz);g.lineTo(vpx+i*260,h);g.stroke();}for(let k=1;k<14;k++){const y=hz+(h-hz)*Math.pow(k/14,1.8);g.beginPath();g.moveTo(0,y);g.lineTo(w,y);g.stroke();}}
-  else{g.strokeStyle='rgba(230,220,200,.75)';g.lineWidth=10;g.beginPath();g.moveTo(vpx,hz);g.lineTo(-w*0.2,h);g.stroke();
-    for(let i=0;i<8;i++){g.fillStyle='rgba(235,232,220,.8)';const y=hz+(h-hz)*0.16,x0=w*0.1+i*w*0.11;g.beginPath();g.moveTo(x0,y);g.lineTo(x0+w*0.06,y);g.lineTo(x0+w*0.07,y+16);g.lineTo(x0-w*0.01,y+16);g.fill();}
-    g.fillStyle='rgba(230,230,230,.85)';g.fillRect(0,hz+(h-hz)*0.43,w,22);}
-  const id=g.getImageData(0,hz,w,h-hz);for(let i=0;i<id.data.length;i+=4){const n=(Math.random()-.5)*26;id.data[i]+=n;id.data[i+1]+=n;id.data[i+2]+=n;}g.putImageData(id,0,hz);
-  const lx=w*(v?0.2:0.78);
-  g.fillStyle='#0b0b0d';g.fillRect(lx-7,h*0.12,14,hz+h*0.09-h*0.12);
-  gr=g.createRadialGradient(lx,h*0.12,4,lx,h*0.12,h*0.28);gr.addColorStop(0,'rgba(255,240,200,1)');gr.addColorStop(.08,'rgba(255,200,120,.75)');gr.addColorStop(1,'rgba(255,170,80,0)');
-  g.globalCompositeOperation='screen';g.fillStyle=gr;g.fillRect(0,0,w,h);
-  gr=g.createRadialGradient(lx,hz+h*0.12,10,lx,hz+h*0.12,w*0.6);gr.addColorStop(0,'rgba(255,190,110,.32)');gr.addColorStop(1,'rgba(255,190,110,0)');
-  g.fillStyle=gr;g.fillRect(0,hz,w,h-hz);g.globalCompositeOperation='source-over';
+  const hz=Math.round(rows*(v?.47:.44)),vp=Math.round(cols*(v?.42:.55));
+
+  // volcado de consola de fondo, apenas visible
+  const CODE=['> espectros --escena '+(v?'cuarto':'calle'),'> montando piso en perspectiva','0x1F4A  set  horizonte, '+hz,'0x1F52  call dibujar_neon','  [ok] 1080x1920 · 24 fps','> esperando tus fotos_'];
+  CODE.forEach((ln,i)=>{for(let q=0;q<ln.length;q++)put(2+i*2,3+q,ln[q],.13);});
+
+  if(!v){
+    // calle: siluetas de edificios con ventanas encendidas
+    let q=0;
+    while(q<cols){
+      const bw=3+Math.floor(R()*7),bh=5+Math.floor(R()*18);
+      for(let r=hz-bh;r<hz;r++)for(let k=0;k<bw&&q+k<cols;k++)put(r,q+k,'#',.08+.06*R());
+      for(let r=hz-bh+1;r<hz-1;r+=2)for(let k=1;k<bw-1;k+=2)if(R()<.38)put(r,q+k,R()<.5?'0':'=',.4+.35*R());
+      q+=bw+1+Math.floor(R()*2);
+    }
+    for(let i=0;i<90;i++){const r=Math.floor(R()*Math.max(1,hz-16)),q2=Math.floor(R()*cols);if(grid[r][q2])continue;put(r,q2,'.·*'[Math.floor(R()*3)],.12+.28*R());}
+  }else{
+    // cuarto: paredes a los lados y un cuadro en la del fondo
+    for(let r=3;r<hz;r++)for(let q=0;q<cols;q++){if((q<cols*.13||q>cols*.87)&&R()<.5)put(r,q,':',.07+.08*R());}
+    const x0=Math.round(cols*.3),x1=Math.round(cols*.7),y0=Math.round(hz*.34),y1=hz-6;
+    for(let q=x0;q<=x1;q++){put(y0,q,'-',.42);put(y1,q,'-',.42);}
+    for(let r=y0;r<=y1;r++){put(r,x0,'|',.42);put(r,x1,'|',.42);}
+    for(const [r,q] of [[y0,x0],[y0,x1],[y1,x0],[y1,x1]])put(r,q,'+',.55);
+    for(let r=y0+1;r<y1;r++)for(let q=x0+1;q<x1;q++)if(R()<.45)put(r,q,' .:-='[Math.floor(R()*5)],.08+.16*R());
+  }
+
+  // horizonte
+  for(let q=0;q<cols;q++)put(hz,q,'=',.45+.15*R());
+
+  // piso: lineas de profundidad y rayos hacia el punto de fuga
+  for(let j=1;j<=13;j++){const r=Math.round(hz+(rows-hz)*Math.pow(j/13,1.75));for(let q=0;q<cols;q++)put(r,q,'-',.1+.22*(j/13));}
+  for(let k=-12;k<=12;k++){
+    if(!k)continue;
+    for(let r=hz+1;r<rows;r++){const d=(r-hz)/(rows-hz);put(r,Math.round(vp+k*cols*.085*Math.pow(d,1.25)),k<0?'\\':'/',.12+.3*d);}
+  }
+  for(let i=0;i<220;i++){const r=hz+1+Math.floor(R()*(rows-hz-1)),q=Math.floor(R()*cols);if(grid[r][q])continue;put(r,q,'.',.06+.18*R());}
+
+  g.textBaseline='top';
+  g.font='500 '+fs+'px "JetBrains Mono",ui-monospace,Menlo,monospace';
+  for(let r=0;r<rows;r++)for(let q=0;q<cols;q++){const cell=grid[r][q];if(!cell||cell.ch===' ')continue;
+    g.fillStyle='rgba(74,222,128,'+cell.a.toFixed(3)+')';g.fillText(cell.ch,ox+q*cw,r*fs);}
+
+  // resplandor en el punto de fuga: le da al piso algo que la sombra pueda oscurecer
+  let gr=g.createRadialGradient(ox+vp*cw,hz*fs,10,ox+vp*cw,hz*fs,w*.8);
+  gr.addColorStop(0,'rgba(74,222,128,.11)');gr.addColorStop(1,'rgba(74,222,128,0)');
+  g.globalCompositeOperation='screen';g.fillStyle=gr;g.fillRect(0,0,w,h);g.globalCompositeOperation='source-over';
+  // lineas de barrido, para que se lea como pantalla y no como foto
+  g.fillStyle='rgba(0,0,0,.22)';for(let y=0;y<h;y+=4)g.fillRect(0,y,w,2);
   return c;
 }
 
 // ---------- estado ----------
-const S={shType:'ambas',shTint:'fria',shPersp:.3,shCSize:1,shCSoft:.5,shPen:.7,shFade:.6,shPool:.4,shDist:0,shLen:.5,shAng:-.25,shBlur:.25,aspect:'original',fLook:'0',fLookAmt:1,fTemp:0,fSat:1,fCon:1,fFade:0,fVig:.5,fHal:0,fGrain:0,fGsize:1.6,fWeave:0,fLeak:0,fFlk:0,fSpr:false,fDust:0,fHair:0,fScr:0,palette:'neon',cSpeed:1,cMode:'suave',bloom:1,size:.1,thick:1,aberr:.7,ca:.6,spin:1,flick:.5,trail:.45,opacity:.9,distort:.4,night:false,nightAmt:.75,refl:.6,glow:.8,shadow:.15,dur:4.5,zoom:.22,shake:.6,grain:.45,cam:'leve',tin:'neon',tout:'neon',trDur:.9,loop:false,defForm:'auto',res:1080,sound:false};
+const S={shType:'ambas',shTint:'fria',shPersp:.3,shCSize:1,shCSoft:.5,shCont:1,shCast:1,shPen:.7,shFade:.6,shPool:.4,shDist:0,shLen:.5,shAng:-.25,shBlur:.25,aspect:'original',fLook:'0',fLookAmt:1,fTemp:0,fSat:1,fCon:1,fFade:0,fVig:.5,fHal:0,fGrain:0,fGsize:1.6,fWeave:0,fLeak:0,fFlk:0,fSpr:false,fDust:0,fHair:0,fScr:0,palette:'neon',cSpeed:1,cMode:'suave',bloom:1,size:.1,thick:1,aberr:.7,ca:.6,spin:1,flick:.5,trail:.45,opacity:.9,distort:.4,night:false,nightAmt:.75,refl:.6,glow:.8,shadow:.15,dur:4.5,zoom:.22,shake:.6,grain:.45,cam:'leve',tin:'neon',tout:'neon',trDur:.9,loop:false,defForm:'auto',res:1080,sound:false};
 let shots=[],sel=0,T=0,playing=false,recording=false,mode='anchor';
 let lastM=new DOMMatrix(),lastZ=1;
 const newCrop=()=>({ox:0,oy:0,sc:1});
@@ -462,8 +489,8 @@ const GEO_FORMS=['teseracto','geodesica','nudo','metatron','hiperocta','armilar'
 function addDemo(){
   const a=demoScene(0),b=demoScene(1);
   shots=[
-    {img:a,name:'Ejemplo · calle al anochecer',thumb:a.toDataURL('image/jpeg',.6),anchor:{u:.55,v:.66},crop:newCrop(),form:'teseracto',seed:11,demo:true},
-    {img:b,name:'Ejemplo · plaza de noche',thumb:b.toDataURL('image/jpeg',.6),anchor:{u:.46,v:.72},crop:newCrop(),form:'teseracto',seed:5,demo:true},
+    {img:a,name:'Ejemplo · calle en ASCII',thumb:a.toDataURL('image/jpeg',.6),anchor:{u:.55,v:.66},crop:newCrop(),form:'teseracto',seed:11,demo:true},
+    {img:b,name:'Ejemplo · cuarto en ASCII',thumb:b.toDataURL('image/jpeg',.6),anchor:{u:.46,v:.72},crop:newCrop(),form:'teseracto',seed:5,demo:true},
   ];
 }
 function imgRect(shot){const iw=shot.img.width,ih=shot.img.height;const s=Math.max(W/iw,H/ih)*shot.crop.sc;const w=iw*s,h=ih*s;return[W/2+shot.crop.ox*W-w/2,H/2+shot.crop.oy*H-h/2,w,h];}
@@ -874,21 +901,23 @@ function render(Tg){
       const fade=Rf.createLinearGradient(0,A.y,0,A.y+Sc*3.2);fade.addColorStop(0,'rgba(0,0,0,0)');fade.addColorStop(1,'rgba(0,0,0,1)');
       Rf.globalCompositeOperation='destination-out';Rf.fillStyle=fade;Rf.fillRect(0,A.y,W,H-A.y);Rf.fillStyle='#000';Rf.fillRect(0,0,W,A.y);Rf.globalCompositeOperation='source-over';}
     {const tint={neutra:[0,0,0],fria:[2,5,14],calida:[14,7,2]}[S.shTint]||[0,0,0];const a=Math.min(1,S.shadow*p),per=S.shPersp;
+    // cada sombra lleva su propio peso, para poder equilibrarlas sin mover la intensidad general
+    const aC=Math.min(1,a*S.shCont),aP=Math.min(1,a*S.shCast);
     // sombra de contacto: mancha suave bajo la figura, aplastada por la perspectiva del piso
-    if(a>0&&(S.shType==='contacto'||S.shType==='ambas')){const rx=Sc*1.05*S.shCSize,ry=rx*per,soft=S.shCSoft;
+    if(aC>0&&(S.shType==='contacto'||S.shType==='ambas')){const rx=Sc*1.05*S.shCSize,ry=rx*per,soft=S.shCSoft;
       bg.save();bg.translate(A.x,A.y+S.shDist*Sc*.1);bg.scale(1,ry/rx);
-      let g=bg.createRadialGradient(0,0,0,0,0,rx);g.addColorStop(0,css(tint,.95*a));g.addColorStop(.25+.4*(1-soft),css(tint,.55*a));g.addColorStop(1,css(tint,0));
+      let g=bg.createRadialGradient(0,0,0,0,0,rx);g.addColorStop(0,css(tint,.95*aC));g.addColorStop(.25+.4*(1-soft),css(tint,.55*aC));g.addColorStop(1,css(tint,0));
       bg.fillStyle=g;bg.beginPath();bg.arc(0,0,rx,0,7);bg.fill();
-      g=bg.createRadialGradient(0,0,0,0,0,rx*.32);g.addColorStop(0,css(tint,.75*a*(1-soft*.5)));g.addColorStop(1,css(tint,0));bg.fillStyle=g;bg.beginPath();bg.arc(0,0,rx*.32,0,7);bg.fill();
+      g=bg.createRadialGradient(0,0,0,0,0,rx*.32);g.addColorStop(0,css(tint,.75*aC*(1-soft*.5)));g.addColorStop(1,css(tint,0));bg.fillStyle=g;bg.beginPath();bg.arc(0,0,rx*.32,0,7);bg.fill();
       bg.restore();}
     // sombra proyectada: silueta tendida en el piso, con penumbra que crece al alejarse
-    if(a>0&&(S.shType==='proyectada'||S.shType==='ambas')){const sc=shadowC.getContext('2d');sc.setTransform(1,0,0,1,0,0);sc.clearRect(0,0,W,H);sc.globalCompositeOperation='source-over';
+    if(aP>0&&(S.shType==='proyectada'||S.shType==='ambas')){const sc=shadowC.getContext('2d');sc.setTransform(1,0,0,1,0,0);sc.clearRect(0,0,W,H);sc.globalCompositeOperation='source-over';
       sc.setTransform(1,0,-S.shAng,-S.shLen*per*3.3,S.shAng*A.y,A.y*(1+S.shLen*per*3.3)+S.shDist*Sc*per*3.3);sc.drawImage(darkC,0,0);{const k=Math.max(1,Sc*.011);for(const [dx,dy] of [[0,0],[k,0],[-k,0],[0,k],[0,-k],[k,k],[-k,-k],[k,-k],[-k,k]])sc.drawImage(lightC,dx,dy);}
       sc.setTransform(1,0,0,1,0,0);sc.globalCompositeOperation='source-in';sc.fillStyle=css(tint,1);sc.fillRect(0,0,W,H);
       if(S.shFade>0){const Ln=Sc*(.4+3*S.shLen*per*3.3)+S.shDist*Sc*per*3.3;sc.globalCompositeOperation='destination-out';const fg=sc.createLinearGradient(0,A.y,0,A.y+Ln);fg.addColorStop(0,'rgba(0,0,0,0)');fg.addColorStop(1,`rgba(0,0,0,${S.shFade})`);sc.fillStyle=fg;sc.fillRect(0,A.y,W,Ln);sc.fillStyle=`rgba(0,0,0,${S.shFade})`;sc.fillRect(0,A.y+Ln,W,H);}
       sc.globalCompositeOperation='source-over';
       const m=Math.min(W,H),base=m*(.001+.012*S.shBlur),pen=m*.035*S.shPen;
-      for(const [bl,w] of [[base,.6],[base+pen*.4,.28],[base+pen,.2]]){bg.filter=bl>.5?`blur(${Math.round(bl)}px)`:'none';bg.globalAlpha=Math.min(1,a*w*2.2);bg.drawImage(shadowC,0,0);}
+      for(const [bl,w] of [[base,.6],[base+pen*.4,.28],[base+pen,.2]]){bg.filter=bl>.5?`blur(${Math.round(bl)}px)`:'none';bg.globalAlpha=Math.min(1,aP*w*2.2);bg.drawImage(shadowC,0,0);}
       bg.filter='none';bg.globalAlpha=1;}
     // charco de luz del neón en el piso
     if(S.shPool>0){const col=palAt(t+rr[1]*10);const rx=Sc*1.7,ry=rx*per;bg.save();bg.globalCompositeOperation='screen';bg.translate(A.x,A.y);bg.scale(1,ry/rx);
@@ -1017,7 +1046,7 @@ async function loadFiles(files){
 
 // ---------- controles ----------
 const pct=v=>Math.round(v*100)+'%',f2=v=>v.toFixed(2);
-const fmt={shPersp:f2,shCSize:f2,shCSoft:pct,shPen:f2,shFade:pct,shPool:f2,shDist:f2,shLen:f2,shAng:f2,shBlur:pct,fLookAmt:pct,fTemp:f2,fSat:f2,fCon:f2,fFade:f2,fVig:f2,fHal:f2,fGrain:f2,fGsize:f2,fWeave:f2,fLeak:f2,fFlk:f2,fDust:f2,fHair:f2,fScr:f2,cSpeed:v=>v.toFixed(1)+'×',trDur:v=>v.toFixed(1)+' s',bloom:f2,size:pct,thick:f2,aberr:f2,ca:f2,spin:v=>v.toFixed(2)+'×',flick:f2,trail:f2,opacity:pct,distort:f2,nightAmt:pct,refl:f2,glow:f2,shadow:pct,dur:v=>v.toFixed(1)+' s',zoom:v=>'+'+Math.round(v*100)+'%',shake:f2,grain:f2};
+const fmt={shPersp:f2,shCSize:f2,shCSoft:pct,shCont:f2,shCast:f2,shPen:f2,shFade:pct,shPool:f2,shDist:f2,shLen:f2,shAng:f2,shBlur:f2,fLookAmt:pct,fTemp:f2,fSat:f2,fCon:f2,fFade:f2,fVig:f2,fHal:f2,fGrain:f2,fGsize:f2,fWeave:f2,fLeak:f2,fFlk:f2,fDust:f2,fHair:f2,fScr:f2,cSpeed:v=>v.toFixed(1)+'×',trDur:v=>v.toFixed(1)+' s',bloom:f2,size:pct,thick:f2,aberr:f2,ca:f2,spin:v=>v.toFixed(2)+'×',flick:f2,trail:f2,opacity:pct,distort:f2,nightAmt:pct,refl:f2,glow:f2,shadow:pct,dur:v=>v.toFixed(1)+' s',zoom:v=>'+'+Math.round(v*100)+'%',shake:f2,grain:f2};
 for(const k of Object.keys(fmt)){const el=$(k),o=$('o_'+k);const up=()=>{S[k]=parseFloat(el.value);o.textContent=fmt[k](S[k]);if(k==='dur')renderShots();redraw();};el.addEventListener('input',up);up();}
 $('palette').onchange=e=>{S.palette=e.target.value;redraw();};
 $('cMode').onchange=e=>{S.cMode=e.target.value;redraw();};

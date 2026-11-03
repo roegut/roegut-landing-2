@@ -137,6 +137,16 @@ un HTML autocontenido sin build, y el JS del artifact quedó intacto.
 `body::before` fijo: son decoración de pantalla y no entran en el video, porque
 el video se dibuja en el lienzo.
 
+Las dos **escenas de ejemplo también son ASCII**: una retícula de caracteres
+verdes dibujada en un lienzo, no fotos. Es a propósito —Javier no quería fotos
+de muestra— y conservan horizonte y piso en perspectiva porque la herramienta
+los necesita para posar la figura y tender la sombra.
+
+Los controles de sombra llevan **un peso por separado para el contacto y para la
+proyectada**, además de la intensidad general. Las fórmulas guardadas antes de
+eso siguen abriendo: `applySettings` solo aplica las claves que trae la fórmula,
+así que las nuevas se quedan en su valor actual.
+
 El logo dejó de ser una imagen y pasó a ser el nombre en texto. Eran 354 KB de
 PNG en base64 dentro del HTML: el archivo bajó de 457 KB a 102 KB. En pantallas
 angostas el nombre en texto ocupa más que el logo que había, así que por debajo
