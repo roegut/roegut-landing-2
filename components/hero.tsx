@@ -1,9 +1,9 @@
 "use client"
 
-import { Fragment, useRef } from "react"
+import { Fragment } from "react"
 import Image from "next/image"
 import { motion, useReducedMotion } from "framer-motion"
-import { TubesBackground } from "@/components/ui/neon-flow"
+import { ShaderAnimation } from "@/components/ui/shader-animation"
 import { buildWhatsAppLink } from "@/lib/whatsapp"
 
 // Latido del logo: dos pulsos seguidos y luego descanso, como un corazon.
@@ -123,15 +123,15 @@ function TextoConHalo({
 
 export function Hero() {
   const menosMovimiento = useReducedMotion()
-  // Centro de la orbita del fondo mientras nadie mueve el raton.
-  const logoRef = useRef<HTMLDivElement>(null)
 
   // Antes esto no se dibujaba hasta que el componente montaba en el navegador,
   // y eso dejaba el titulo, la descripcion y los botones fuera del HTML que
-  // recibe Google. El fondo de tubos ya espera al navegador por su cuenta.
+  // recibe Google. El shader espera al navegador por su cuenta.
   return (
     <section className="relative min-h-screen w-full overflow-hidden">
-      <TubesBackground className="absolute inset-0 h-full w-full min-h-screen" orbitAround={logoRef}>
+      <ShaderAnimation className="absolute inset-0 h-full w-full min-h-screen" />
+
+      <div className="relative z-10 min-h-screen w-full">
         {/* El titulo principal de la pagina. Va oculto a la vista porque la
             marca se muestra como imagen, pero sin el los buscadores no tienen
             de donde deducir de que trata el sitio. */}
@@ -142,7 +142,6 @@ export function Hero() {
         {/* Logo positioned near the top so it doesn't sit under a big empty ceiling */}
         <div className="absolute inset-0 flex items-start justify-center px-4 pt-[13vh] md:pt-[11vh]">
           <motion.div
-            ref={logoRef}
             initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 1.2, ease: "easeOut" }}
@@ -187,22 +186,12 @@ export function Hero() {
                     }
               }
             >
-              {/* unoptimized es obligatorio: el optimizador de imagenes de Next
-                  reencoda el archivo y se lleva por delante la animacion. */}
               <Image
-                src="/images/roegut-lab-logo.webp"
+                src="/images/roegut-lab-logo.png"
                 alt="Roegut Lab"
-                width={900}
-                height={900}
+                width={1024}
+                height={1024}
                 priority
-                unoptimized
-                // Sin sombras de radio corto: a pocos pixeles se leen como un
-                // borde recortado y no como luz. Solo halos anchos en fucsia,
-                // que ademas separan del negro las variantes de letra oscura.
-                style={{
-                  filter:
-                    "drop-shadow(0 0 14px rgba(255,45,149,0.55)) drop-shadow(0 0 40px rgba(255,45,149,0.35)) drop-shadow(0 0 90px rgba(236,0,140,0.28))",
-                }}
                 className="relative w-[min(70vw,370px)] md:w-[min(38vw,450px)] h-auto motion-reduce:hidden"
               />
             </motion.div>
@@ -211,9 +200,9 @@ export function Hero() {
             <Image
               src="/images/roegut-lab-logo.png"
               alt="Roegut Lab"
-              width={720}
-              height={720}
-              className="hidden motion-reduce:block w-[min(70vw,370px)] md:w-[min(38vw,450px)] h-auto drop-shadow-[0_16px_48px_rgba(0,0,0,0.35)]"
+              width={1024}
+              height={1024}
+              className="hidden motion-reduce:block w-[min(70vw,370px)] md:w-[min(38vw,450px)] h-auto"
             />
           </motion.div>
         </div>
@@ -261,7 +250,7 @@ export function Hero() {
           <span className="text-[10px] uppercase tracking-widest text-white">Descubre</span>
           <div className="w-[1px] h-10 bg-white" />
         </motion.div>
-      </TubesBackground>
+      </div>
     </section>
   )
 }
