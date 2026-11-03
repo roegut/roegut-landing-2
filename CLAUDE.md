@@ -125,6 +125,24 @@ fuera de claude.ai.
 rewrites devueltos como arreglo se aplican después de resolver páginas, y `/` ya
 existe, así que ahí nunca entraría.
 
+### La piel de terminal
+
+El aspecto salió de una plantilla que trajo Javier (un proyecto de v0, React con
+Tailwind y shadcn). **Solo se adaptó el lenguaje visual, no se portó el
+proyecto**: negro con líneas de barrido, verde fósforo, bordes duros de 2px,
+esquinas rectas y monoespaciada en toda la interfaz. Así el archivo sigue siendo
+un HTML autocontenido sin build, y el JS del artifact quedó intacto.
+
+**El cambio es solo CSS, más la cabecera.** Las líneas de barrido viven en un
+`body::before` fijo: son decoración de pantalla y no entran en el video, porque
+el video se dibuja en el lienzo.
+
+El logo dejó de ser una imagen y pasó a ser el nombre en texto. Eran 354 KB de
+PNG en base64 dentro del HTML: el archivo bajó de 457 KB a 102 KB. En pantallas
+angostas el nombre en texto ocupa más que el logo que había, así que por debajo
+de 560 px se oculta «by Roegut» para que el formato del video siga cabiendo en
+la cabecera.
+
 ## Pendientes
 
 - Subir las fotos de las ocho series que esperan en sus carpetas.
