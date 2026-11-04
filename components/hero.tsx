@@ -131,6 +131,23 @@ export function Hero() {
     <section className="relative min-h-screen w-full overflow-hidden">
       <ShaderAnimation className="absolute inset-0 h-full w-full min-h-screen" />
 
+      {/* Velo entre el shader y el contenido. El shader tiene un ciclo: casi
+          se apaga y despues sube hasta llenar la pantalla de franjas. En ese
+          punto alto las franjas pasan por encima del logo y de los botones, y
+          el texto blanco se queda sin contraste. Este velo oscurece el centro
+          y el pie —donde vive todo lo que hay que leer— y deja los bordes
+          vivos, que es donde el fondo se luce. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-[1]"
+        style={{
+          background: [
+            "radial-gradient(115% 85% at 50% 42%, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.58) 38%, rgba(0,0,0,0.22) 70%, rgba(0,0,0,0) 100%)",
+            "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.55) 22%, rgba(0,0,0,0) 52%)",
+          ].join(", "),
+        }}
+      />
+
       <div className="relative z-10 min-h-screen w-full">
         {/* El titulo principal de la pagina. Va oculto a la vista porque la
             marca se muestra como imagen, pero sin el los buscadores no tienen
@@ -139,8 +156,8 @@ export function Hero() {
           Roegut Lab — Estudio de fotografía de autor en Cercado de Lima, Perú
         </h1>
 
-        {/* Logo positioned near the top so it doesn't sit under a big empty ceiling */}
-        <div className="absolute inset-0 flex items-start justify-center px-4 pt-[13vh] md:pt-[11vh]">
+        {/* Logo un poco mas abajo para no pegarse al borde superior. */}
+        <div className="absolute inset-0 flex items-start justify-center px-4 pt-[20vh] md:pt-[18vh]">
           <motion.div
             initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
