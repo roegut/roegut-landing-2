@@ -10,6 +10,15 @@ Forma parte de un proyecto más grande junto al **bot de WhatsApp**, que vive en
 `~/Documents/Roegut Bot` y tiene su propio `CLAUDE.md`. Los dos se tocan: la web
 manda los clientes al bot.
 
+El tercero es el **Radar de clientes**, en `~/Roegut Radar`, también
+con su `CLAUDE.md`: busca negocios y ferias de Lima que necesiten fotos,
+los investiga y prepara los mensajes. Es una herramienta local —scripts de
+Python y un visor en el navegador—, **no vive en esta web ni puede vivir
+acá**: lo inteligente lo hace Claude Code en la Mac de Javier, y Vercel no
+tiene disco donde guardar sus datos. Se abre con `Radar.command` o en
+`http://localhost:8765`. Vive fuera de `~/Documents` a propósito: macOS no
+deja que un arranque automático lea esa carpeta.
+
 ## Publicación
 
 GitHub (`roegut/roegut-landing-2`) → Vercel (proyecto `roegutlab`) reconstruye
@@ -28,6 +37,20 @@ días y después empieza a dar errores de seguridad sin motivo aparente.
 encontrarlo: el DNS estaba perfecto y el sitio no cargaba porque el dominio raíz
 figuraba en Vercel pero sin conectar a `roegutlab`. Si algún día `https` falla
 mientras el DNS resuelve bien, mirar eso primero.
+
+**Hay un proyecto duplicado en Vercel: `roegutlabb`, con una be de más.** El
+repositorio se importó dos veces el 11 de agosto de 2026, el primer día, y el
+segundo nombre quedó así porque `roegutlab` ya estaba tomado. Construye cada
+commit en paralelo desde entonces —producción y vistas previas— pero no lo ve
+nadie: su despliegue de producción redirige al inicio de sesión de Vercel y
+`roegutlabb.vercel.app` da 404, o sea que no tiene dominio asignado. No es un
+riesgo, es desperdicio: duplica cada compilación y mete una segunda
+verificación en cada commit de GitHub. **Conviene borrarlo**, o al menos
+desconectarle el repositorio, desde el panel de Vercel.
+
+`roegut.com` lo sirve `roegutlab`, el proyecto bueno: el dominio, `www`, el
+despliegue de producción de `roegutlab` y `roegutlab.vercel.app` devuelven el
+mismo HTML byte a byte.
 
 ## Portafolio: la carpeta es la base de datos
 
