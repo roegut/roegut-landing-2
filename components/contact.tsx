@@ -10,14 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { WHATSAPP_NUMBER, buildWhatsAppLink, formatWhatsAppNumber } from "@/lib/whatsapp"
 import { SITIO } from "@/lib/site"
 
-const sessionTypes = [
-  "Retrato de autor",
-  "Marca personal – Profesional",
-  "Moda y lookbooks",
-  "Fotografía comercial",
-  "Retrato de mascotas",
-  "Producción de campaña",
-]
+// Las mismas seis categorias del bot de WhatsApp, leidas de `lib/site.ts` para
+// no tener dos listas que se desincronicen. El tipo elegido viaja dentro del
+// mensaje, y el bot lo reconoce para saltarse su menu inicial.
+const sessionTypes = SITIO.servicios
 
 const channels = [
   { label: "WhatsApp", value: formatWhatsAppNumber(), href: `https://wa.me/${WHATSAPP_NUMBER}` },
